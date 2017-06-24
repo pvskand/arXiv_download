@@ -5,6 +5,7 @@ Usage:
 
 Options:
     -h, --help                  Print this message
+    -d                          Download paper
     --get_info=<int>            Index of the paper that you want to get info or download
     --query=<str>               Query[Paper] that you want to search for 
     --max_result=<int>          Maximum Results to be retrieved [Default = 10]
@@ -19,9 +20,8 @@ Options:
 import requests
 import urllib
 import feedparser
-import argparse
 from docopt import docopt
-
+import os
 
 base_url = "http://export.arxiv.org/api/query?"
 
@@ -65,7 +65,13 @@ def get_info(index, feed):
     print "Summary :\n"
     print entry.summary, "\n"
 
-
+def download_paper(get_info, feed):
+    for link in feed.entries[get_info].links:
+        if link.rel == 'alternate':
+            abs_link =  link.href
+        elif link.title == 'pdf':
+            pdf_link =  link.href
+    os.system("wget -U firefox "+ pdf_link + ".pdf")
 
 
 if __name__ == "__main__":
@@ -85,6 +91,8 @@ if __name__ == "__main__":
             index = int(args['--get_info'])
             feed = get_query()
             get_info(index, feed)        
+            if args["-d"]:
+                download_paper(index, feed)
         else:
             feed = get_query()
             print_query(feed)    
