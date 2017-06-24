@@ -1,17 +1,34 @@
+docstr = """To download arXiv papers from terminal
+
+Usage: 
+    arXiv.py [options]
+
+Options:
+    -h, --help                  Print this message
+    --get_info=<int>            Index of the paper that you want to get info or download
+    --query=<str>               Query[Paper] that you want to search for 
+    --max_result=<int>          Maximum Results to be retrieved [Default = 10]
+    
+"""
+
+
+
+
+
+
 import requests
 import urllib
 import feedparser
 import argparse
-
+from docopt import docopt
 
 
 base_url = "http://export.arxiv.org/api/query?"
 
 search_query = "DeepLab"
 start = 0
-max_result = 5
+max_result = 10
 
-query = 'search_query=%s&start=%i&max_results=%i' % (search_query, start, max_result)
 
 feedparser._FeedParserMixin.namespaces['http://a9.com/-/spec/opensearch/1.1/'] = 'opensearch'
 feedparser._FeedParserMixin.namespaces['http://arxiv.org/schemas/atom'] = 'arxiv'
@@ -19,13 +36,19 @@ feedparser._FeedParserMixin.namespaces['http://arxiv.org/schemas/atom'] = 'arxiv
 ''' A function to query from the arXiv API '''
 
 def get_query():
+    query = 'search_query=%s&start=%i&max_results=%i' % (search_query, start, max_result)
     response = urllib.urlopen(base_url+query).read() 
     feed = feedparser.parse(urllib.urlopen(base_url+query))
-    print feed.get('status')
     if feed.get('status') != 200:
         raise Exception("HTTP Error " + str((feed.get('status', 'no status')) + " in query"))
 
     return feed
+
+''' Function to print the list of papers that was queried for'''
+
+def print_query(feed):
+    for idx, entry in enumerate(feed.entries):
+        print str(idx)+")", entry.title
 
 ''' Function to get information of a specific paper'''
 
@@ -46,20 +69,25 @@ def get_info(index, feed):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Display Research Papers from arXiv.org and download from terminal itself!"
-    )
     
-    parser.add_argument("query", default="DeepLab", type=str, nargs='*',
-                        help="Research Paper that you want to search")
-    
-    args = parser.parse_args()
-    print args.query 
 
-
-    feed = get_query()
     index = 1
-    get_info(index, feed)
+    
+    args = docopt(docstr, version='v0.1')
+    print args
+    
+    if args["--max_result"]:
+        max_result = int(args['--max_result'])
+    
+    search_query = args["--query"]
+    if search_query:
+        if args["--get_info"]:
+            index = int(args['--get_info'])
+            feed = get_query()
+            get_info(index, feed)        
+        else:
+            feed = get_query()
+            print_query(feed)    
 
 
 
