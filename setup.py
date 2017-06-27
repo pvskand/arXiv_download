@@ -9,7 +9,7 @@ setup(name='arXiv_download',
       author='Skand Vishwanath Peri',
       author_email='pvskand@gmail.com',
       license='MIT',
-      scripts=['bin/arXiv_download'],
+      scripts=['bin/arXiv'],
       packages=['arXiv_download'],
       install_requires=[
           'docopt',
