@@ -12,7 +12,14 @@ To install follow the steps:
 # Options
 
 There are multiple options that you can use.
-1) Query : To search for papers
-2) Get Info : To get information such as the authors, summary, published date etc. of a single paper
-3) Download : To download the paper.
+1) `--query` : To search for papers
+2) `--get_info` : To get information such as the authors, summary, published date etc. of a single paper
+3) `-d` : To download the paper.
+4) `--max_results` : How many results to display
+
+# Examples
+
+`arXiv --query="DeepLab" --max_results=10` - displays 10 results for the query
+`arXiv --query="DeepLab" --get_info=4`- Displays the summary of the 4th option
+`arXiv --query="DeepLab" --get_info=4 -d` - Downloads the paper 
 
